@@ -22,3 +22,10 @@ class Product(BaseModel):
     id: int
     name: str
     price: float
+
+
+class OrderResponse(BaseModel):
+    order_id: int
+    payment_transaction: str
+    shipping_tracking: str
+    status: str

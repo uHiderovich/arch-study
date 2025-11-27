@@ -18,5 +18,6 @@ def get_current_user(authorization: str = Header(...)):
 
 
 @router.get("/")
-def get_products(user=Depends(get_current_user)):
+def get_products():
+    """def get_products(user=Depends(get_current_user)):"""
     return fake_products

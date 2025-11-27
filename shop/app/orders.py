@@ -1,12 +1,7 @@
 from fastapi import APIRouter
-from environs import Env
 
-from .notifications import notification_service
-
-env = Env()
-env.read_env()
-
-EMAIL_TEST = env("EMAIL_TEST")
+from .services.notifications import notification_service
+from .services.orders import orders_service
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
@@ -15,7 +10,7 @@ router = APIRouter(prefix="/orders", tags=["orders"])
 def buy():
     notification_service.send(
         type="email",
-        to=EMAIL_TEST,
+        to="test@test.com",
         title="Ваш заказ принят",
         message="Спасибо за покупку!"
     )
@@ -31,3 +26,13 @@ def subscribe(subscription: dict):
         message="Спасибо за подписку!"
     )
     return "Subscription created!"
+
+
+@router.post("/checkout")
+async def checkout(order_id: int, amount: float, address: str):
+    order_res = await orders_service.create_order(
+        order_id,
+        amount,
+        address
+    )
+    return order_res

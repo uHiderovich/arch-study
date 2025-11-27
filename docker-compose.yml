@@ -1,6 +1,19 @@
 version: "3.9"
 
 services:
+  shop:
+    build: ./shop
+    container_name: shop
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./shop/app:/app/app
+    environment:
+      PYTHONUNBUFFERED: 1
+    restart: unless-stopped
+    networks:
+      - shop_network
+
   email-service:
     build: ./email
     container_name: email-service
@@ -14,22 +27,30 @@ services:
     container_name: push-service
     ports:
       - "5002:5002"
-    environment:
-      VAPID_PUBLIC_KEY: "тут ключ"
-      VAPID_PRIVATE_KEY: "тут ключ"
     networks:
       - shop_network
 
-  shop:
-    build: ./shop
-    container_name: shop
+  payment-service:
+    build: ./payment
+    container_name: payment-service
     ports:
-      - "8000:8000"
-    volumes:
-      - ./shop/app:/app/app
-    environment:
-      PYTHONUNBUFFERED: 1
-    restart: unless-stopped
+      - "5003:5003"
+    networks:
+      - shop_network
+
+  shipping-service:
+    build: ./shipping
+    container_name: shipping-service
+    ports:
+      - "5004:5004"
+    networks:
+      - shop_network
+
+  order-service:
+    build: ./order
+    container_name: order-service
+    ports:
+      - "5005:5005"
     networks:
       - shop_network
 
