@@ -29,3 +29,8 @@ class OrderResponse(BaseModel):
     payment_transaction: str
     shipping_tracking: str
     status: str
+
+
+class NotificationResponse(BaseModel):
+    status: str
+    message: str

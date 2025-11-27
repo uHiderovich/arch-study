@@ -1,21 +1,23 @@
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from environs import Env
+# import smtplib
+# from email.mime.text import MIMEText
+# from email.mime.multipart import MIMEMultipart
 
-env = Env()
-env.read_env()
+# from environs import Env
 
-SMTP_HOST = env("SMTP_HOST")
-SMTP_PORT = env("SMTP_PORT")
-SMTP_USER = env("SMTP_USER")
-SMTP_PASSWORD = env("SMTP_PASSWORD")
+# env = Env()
+# env.read_env()
+
+# SMTP_HOST = env("SMTP_HOST")
+# SMTP_PORT = env("SMTP_PORT")
+# SMTP_USER = env("SMTP_USER")
+# SMTP_PASSWORD = env("SMTP_PASSWORD")
 
 
 def send_email(to: str, subject: str, message: str):
     print(f'to = {to}')
     print(f'subject = {subject}')
     print(f'message = {message}')
+
 
     # msg = MIMEMultipart()
     # msg["From"] = SMTP_USER

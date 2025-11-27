@@ -9,6 +9,9 @@ app = FastAPI(title="Email Microservice")
 def send_email_endpoint(req: EmailRequest):
     try:
         send_email(req.to, req.subject, req.message)
-        return {"status": "ok", "message": "Email sent!"}
+        return {
+            "status": "ok",
+            "message": "Email sent!"
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

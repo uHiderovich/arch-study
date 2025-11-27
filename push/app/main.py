@@ -9,6 +9,8 @@ app = FastAPI(title="Push Service")
 def send_push_route(payload: PushPayload):
     try:
         send_push(payload.subscription, payload.title, payload.body)
-        return {"status": "ok"}
+        return {
+            "status": "ok",
+        }
     except Exception as e:
         raise HTTPException(500, str(e))

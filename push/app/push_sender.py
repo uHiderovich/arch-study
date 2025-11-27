@@ -1,13 +1,13 @@
-from pywebpush import webpush, WebPushException
-from environs import Env
+# from pywebpush import webpush, WebPushException
+# from environs import Env
 
-env = Env()
-env.read_env()
+# env = Env()
+# env.read_env()
 
-VAPID_PUBLIC_KEY = env("VAPID_PUBLIC_KEY")
-VAPID_PRIVATE_KEY = env("VAPID_PRIVATE_KEY")
+# VAPID_PUBLIC_KEY = env("VAPID_PUBLIC_KEY")
+# VAPID_PRIVATE_KEY = env("VAPID_PRIVATE_KEY")
 
-EMAIL_TEST = env("EMAIL_TEST")
+# EMAIL_TEST = env("EMAIL_TEST")
 
 
 def send_push(subscription: dict, title: str, body: str):
