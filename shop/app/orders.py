@@ -1,17 +1,18 @@
 from fastapi import APIRouter, HTTPException
-
 from .services.notifications import notification_service
 from .services.orders import orders_service
+from app.models import CreateOrderRequest
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
 
 @router.post("/buy")
-async def buy(order_id: int, amount: float, address: str):
+async def buy(request: CreateOrderRequest):
     order_res = await orders_service.create_order(
-        order_id,
-        amount,
-        address
+        request.user_id,
+        request.items,
+        request.price,
+        request.address
     )
 
     if order_res.status != "ok":
@@ -19,7 +20,7 @@ async def buy(order_id: int, amount: float, address: str):
 
     notification_res = await notification_service.send(
         type="email",
-        to=order_res.email,
+        to="test@test.com",
         title="Ваш заказ принят",
         message="Спасибо за покупку!"
     )

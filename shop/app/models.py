@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 
 class UserLogin(BaseModel):
@@ -34,3 +35,15 @@ class OrderResponse(BaseModel):
 class NotificationResponse(BaseModel):
     status: str
     message: str
+
+
+class OrderItem(BaseModel):
+    product_id: int
+    qty: int
+
+
+class CreateOrderRequest(BaseModel):
+    user_id: int
+    items: List[OrderItem]
+    address: str
+    price: float

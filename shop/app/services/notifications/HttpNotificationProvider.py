@@ -42,4 +42,6 @@ class HttpNotificationProvider(NotificationProvider):
                 }
             )
             resp.raise_for_status()
-            return NotificationResponse(**resp.json(), message="Push sent!")
+            data = resp.json()
+            data["message"] = "Push sent!"
+            return NotificationResponse(**data)
