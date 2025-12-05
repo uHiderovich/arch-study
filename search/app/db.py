@@ -23,6 +23,9 @@ SHARD_URLS: Dict[str, str] = {
     "shard3": env("SHARD3_DATABASE_URL"),
 }
 
+SHARDS = SHARD_URLS.keys()
+TOTAL_SHARDS = len(SHARDS)
+
 # Создаём Database-инстансы (databases lib)
 databases: Dict[str, Database] = {
     name: Database(url) for name, url in SHARD_URLS.items()
@@ -39,9 +42,22 @@ async def disconnect_all():
         await db.disconnect()
 
 
-def get_db_for_category(category_id: int) -> Database:
-    shard_name = CATEGORY_TO_SHARD.get(category_id)
-    if not shard_name:
-        # если категория неизвестна — можно назначить fallback
-        raise ValueError(f"No shard for category {category_id}")
-    return databases[shard_name]
+def shard_function(product_id: int) -> str:
+    return (hash(product_id) % TOTAL_SHARDS) or TOTAL_SHARDS
+
+
+def get_shard_name(product_id: int) -> str:
+    return f"shard{shard_function(product_id)}"
+
+
+def get_shard_url(product_id: int) -> str:
+    shard_name = get_shard_name(product_id)
+    return SHARD_URLS.get(shard_name)
+
+
+def get_db_for_product(product_id: int):
+    shard_name = get_shard_name(product_id)
+    db = databases.get(f"shard{shard_name}")
+    if not db:
+        raise ValueError(f"No database found for shard {shard_name}")
+    return db

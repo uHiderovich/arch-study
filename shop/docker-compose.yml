@@ -1,0 +1,17 @@
+services:
+  shop:
+    build: ./
+    container_name: shop
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app/app
+    environment:
+      PYTHONUNBUFFERED: 1
+    restart: unless-stopped
+    networks:
+      - shop_network
+
+networks:
+  shop_network:
+    name: shop_network

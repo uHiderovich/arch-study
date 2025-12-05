@@ -1,109 +1,11 @@
-version: "3.9"
-
-services:
-  shop:
-    build: ./shop
-    container_name: shop
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./shop/app:/app/app
-    environment:
-      PYTHONUNBUFFERED: 1
-    restart: unless-stopped
-    networks:
-      - shop_network
-
-  email-service:
-    build: ./email
-    container_name: email-service
-    ports:
-      - "5001:5001"
-    networks:
-      - shop_network
-
-  push-service:
-    build: ./push
-    container_name: push-service
-    ports:
-      - "5002:5002"
-    networks:
-      - shop_network
-
-  payment-service:
-    build: ./payment
-    container_name: payment-service
-    ports:
-      - "5003:5003"
-    networks:
-      - shop_network
-
-  shipping-service:
-    build: ./shipping
-    container_name: shipping-service
-    ports:
-      - "5004:5004"
-    networks:
-      - shop_network
-
-  order-service:
-    build: ./order
-    container_name: order-service
-    ports:
-      - "5005:5005"
-    networks:
-      - shop_network
-
-  shard1:
-    image: postgres:17
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - shard1_data:/var/lib/postgresql/data
-
-  shard2:
-    image: postgres:17
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5433:5432"
-    volumes:
-      - shard2_data:/var/lib/postgresql/data
-
-  shard3:
-    image: postgres:17
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5434:5432"
-    volumes:
-      - shard3_data:/var/lib/postgresql/data
-
-  search-service:
-    build: ./search
-    container_name: search-service
-    ports:
-      - "5006:5006"
-    environment:
-      # os.getenv("SHARD1_DATABASE_URL") !!! Изучить переменные окружения
-      # эти URL используются в app/db.py по умолчанию; override если нужно
-      SHARD1_DATABASE_URL: "postgresql://postgres:postgres@shard1:5432/postgres"
-      SHARD2_DATABASE_URL: "postgresql://postgres:postgres@shard2:5432/postgres"
-      SHARD3_DATABASE_URL: "postgresql://postgres:postgres@shard3:5432/postgres"
-    depends_on:
-      - shard1
-      - shard2
-      - shard3
-
-volumes:
-  shard1_data:
-  shard2_data:
-  shard3_data:
+include:
+  - ./shop/docker-compose.yml
+  - ./email/docker-compose.yml
+  - ./push/docker-compose.yml
+  - ./payment/docker-compose.yml
+  - ./shipping/docker-compose.yml
+  - ./order/docker-compose.yml
+  - ./search/docker-compose.yml
 
 networks:
   shop_network:

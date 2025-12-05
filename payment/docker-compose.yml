@@ -1,0 +1,12 @@
+services:
+  payment-service:
+    build: ./
+    container_name: payment-service
+    ports:
+      - "5003:5003"
+    networks:
+      - shop_network
+
+networks:
+  shop_network:
+    name: shop_network

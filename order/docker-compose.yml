@@ -1,0 +1,12 @@
+services:
+  order-service:
+    build: ./
+    container_name: order-service
+    ports:
+      - "5005:5005"
+    networks:
+      - shop_network
+
+networks:
+  shop_network:
+    name: shop_network

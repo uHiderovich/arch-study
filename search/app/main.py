@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Query, HTTPException
 from typing import List
-from app.db import connect_all, disconnect_all, get_db_for_category
+from app.db import connect_all, disconnect_all, get_db_for_product
 from app.models import products
 from app.schemas import Product
 from contextlib import asynccontextmanager
@@ -15,36 +15,22 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Search Service (sharded)", lifespan=lifespan)
 
 
-# поиск по имени (query param q), необязательный category (если указан — идём в соответствующий шард)
+# поиск по id (query param product_id)
 @app.get("/search", response_model=List[Product])
 async def search(
-    q: str = Query("", description="search text"),
-    category: int | None = Query(None)
+    product_id: int = Query(..., description="Product ID"),
 ):
-    q_str = f"%{q}%"
     results = []
 
-    # если задана категория — ищем только в соответствующем шарде
-    if category is not None:
+    # если задана product_id — ищем только в соответствующем шарде
+    if product_id is not None:
         try:
-            db = get_db_for_category(category)
+            db = get_db_for_product(product_id)
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
-        query = products.select().where(
-            products.c.name.ilike(q_str),
-            products.c.category_id == category
-        )
+        query = products.select().where(products.c.id == product_id)
         rows = await db.fetch_all(query)
         for r in rows:
             results.append(dict(r))
-        return results
 
-    # если категория не задана — агрегируем по всем шардам (сканируем шарды)
-    from app.db import databases
-    for db in databases.values():
-        rows = await db.fetch_all(products.select().where(
-            products.c.name.ilike(q_str)
-        ))
-        for r in rows:
-            results.append(dict(r))
     return results

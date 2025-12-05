@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException, Query, Header
 from jose import jwt as jose_jwt, JWTError
-from fastapi import Header
-from .dependencies import fake_products, fake_users_db
+
 from .auth import SECRET_KEY, ALGORITHM
+from .dependencies import fake_products, fake_users_db
+from .services.search import search_service
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -21,3 +22,8 @@ def get_current_user(authorization: str = Header(...)):
 def get_products():
     """def get_products(user=Depends(get_current_user)):"""
     return fake_products
+
+
+@router.get("/search")
+async def shop_search(product_id: int = Query(...)):
+    return await search_service.search(product_id)
