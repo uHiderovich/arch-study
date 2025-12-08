@@ -57,7 +57,7 @@ def get_shard_url(product_id: int) -> str:
 
 def get_db_for_product(product_id: int):
     shard_name = get_shard_name(product_id)
-    db = databases.get(f"shard{shard_name}")
+    db = databases.get(shard_name)
     if not db:
         raise ValueError(f"No database found for shard {shard_name}")
     return db

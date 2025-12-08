@@ -27,7 +27,7 @@ def create_tables_and_seed():
         product_id = i + 1
         shard_url = get_shard_url(product_id)
         engine = create_engine(shard_url)
-        with engine.connect() as conn:
+        with engine.begin() as conn:
             conn.execute(
                 products.insert().values(
                     id=product_id,
