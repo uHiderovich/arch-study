@@ -4,6 +4,7 @@ from app.db import connect_all, disconnect_all, get_db_for_product
 from app.models import products
 from app.schemas import Product
 from contextlib import asynccontextmanager
+from app.services.cache import cache_service
 
 
 @asynccontextmanager
@@ -21,9 +22,17 @@ async def search(
     product_id: int = Query(..., description="Product ID"),
 ):
     results = []
+    cache_response = None
 
-    # если задана product_id — ищем только в соответствующем шарде
-    if product_id is not None:
+    try:
+        cache_response = await cache_service.get(f"product_id:{product_id}")
+    except Exception as e:
+        print(f"Error getting cache: {e}")
+
+    if cache_response.data:
+        results = cache_response.data
+    elif product_id is not None:
+        # если задана product_id — ищем только в соответствующем шарде
         try:
             db = get_db_for_product(product_id)
         except ValueError as e:
@@ -32,5 +41,10 @@ async def search(
         rows = await db.fetch_all(query)
         for r in rows:
             results.append(dict(r))
+
+        try:
+            await cache_service.set(f"product_id:{product_id}", results)
+        except Exception as e:
+            print(f"Error saving cache: {e}")
 
     return results
