@@ -29,7 +29,7 @@ async def search(
     except Exception as e:
         print(f"Error getting cache: {e}")
 
-    if cache_response.data:
+    if cache_response and cache_response.data:
         results = cache_response.data
     elif product_id is not None:
         # если задана product_id — ищем только в соответствующем шарде

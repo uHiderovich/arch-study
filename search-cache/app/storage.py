@@ -44,7 +44,7 @@ class CacheStorage(Storage):
         self.storage = storage
 
     def make_key(self, query: str) -> str:
-        return hash(query)
+        return str(hash(query))
 
     async def set(self, query: str, data: Any):
         await self.storage.set(self.make_key(query), data)
