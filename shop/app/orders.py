@@ -20,15 +20,14 @@ async def buy(request: CreateOrderRequest):
     if order_res.status != "ok":
         raise HTTPException(status_code=400, detail="Order creation failed")
 
-    notification_res = await notification_service.send(
-        type="email",
-        to="test@test.com",
-        title="Ваш заказ принят",
-        message="Спасибо за покупку!"
-    )
-
-    if notification_res.status != "ok":
-        raise HTTPException(status_code=400, detail="Notification sending failed")
+    try:
+        await notification_service.send_create_order_email(
+            to="test@test.com",
+            title="Ваш заказ принят",
+            message="Спасибо за покупку!"
+        )
+    except Exception as e:
+        print("Notification sending failed", e)
 
     return order_res
 
