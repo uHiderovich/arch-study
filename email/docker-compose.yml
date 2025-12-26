@@ -2,10 +2,14 @@ services:
   email-service:
     build: ./
     container_name: email-service
+    environment:
+      PYTHONUNBUFFERED: 1
     ports:
       - "5001:5001"
     networks:
       - shop_network
+    depends_on:
+      - rabbitmq
 
 networks:
   shop_network:

@@ -4,6 +4,11 @@ import pika
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 
+from environs import Env
+
+env = Env()
+env.read_env()
+
 
 class Connection(ABC):
     @abstractmethod
@@ -11,21 +16,27 @@ class Connection(ABC):
         pass
 
     @abstractmethod
-    async def close(self):
+    def close(self):
         pass
 
 
 class RabbitConnection(Connection):
-    def __init__(self, host: str):
+    def __init__(self):
         self._exchange = "shop.events"
         self._routing_keys = {
             "OrderCreated": "order.created"
         }
 
+        credentials = pika.PlainCredentials(
+            username=env("RABBITMQ_DEFAULT_USER"),
+            password=env("RABBITMQ_DEFAULT_PASS")
+        )
+
         params = pika.ConnectionParameters(
-            host=host,
+            host=env("RABBIT_HOST"),
             heartbeat=30,
-            blocked_connection_timeout=300
+            blocked_connection_timeout=300,
+            credentials=credentials,
         )
 
         self._connection = pika.BlockingConnection(params)
@@ -42,7 +53,7 @@ class RabbitConnection(Connection):
         self._channel.confirm_delivery()
 
     def get_routing_key(self, event_type: str) -> str:
-        return self._routing_keys[event_type],
+        return self._routing_keys[event_type]
 
     def publish(self, event_type: str, body: Dict[str, Any]):
         routing_key = self.get_routing_key(event_type)
@@ -51,14 +62,14 @@ class RabbitConnection(Connection):
                 exchange=self._exchange,
                 routing_key=routing_key,
                 body=json.dumps(body),
-                properties=pika.BasicProperties(
-                    delivery_mode=2,
-                    content_type="application/json"
-                )
+                # properties=pika.BasicProperties(
+                #     delivery_mode=2,
+                #     content_type="application/json"
+                # )
             )
         else:
             raise ValueError(f"Invalid event type: {event_type}")
 
-    async def close(self):
+    def close(self):
         if self._connection and not self._connection.is_closed:
-            await self._connection.close()
+            self._connection.close()

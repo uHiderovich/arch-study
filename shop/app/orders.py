@@ -21,7 +21,7 @@ async def buy(request: CreateOrderRequest):
         raise HTTPException(status_code=400, detail="Order creation failed")
 
     try:
-        await notification_service.send_create_order_email(
+        notification_service.send_create_order_email(
             to="test@test.com",
             title="Ваш заказ принят",
             message="Спасибо за покупку!"

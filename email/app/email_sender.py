@@ -13,9 +13,9 @@
 # SMTP_PASSWORD = env("SMTP_PASSWORD")
 
 
-def send_email(to: str, subject: str, message: str):
+def send_email(to: str, title: str, message: str):
     print(f'to = {to}')
-    print(f'subject = {subject}')
+    print(f'title = {title}')
     print(f'message = {message}')
 
 

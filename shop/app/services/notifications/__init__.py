@@ -1,4 +1,6 @@
-from .RabbitNotifications import rabbit_provider
+from .RabbitNotifications.Connection import RabbitConnection
+from .RabbitNotifications.RabbitNotificationsProvider import PikaNotificationProvider
 
 
-notification_service = rabbit_provider
+connection = RabbitConnection()
+notification_service = PikaNotificationProvider(connection)
