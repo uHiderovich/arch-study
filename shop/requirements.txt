@@ -47,3 +47,5 @@ vbml==1.1.post1
 vkbottle==4.5.2
 vkbottle-types==5.199.99.5
 yarl==1.20.1
+prometheus-fastapi-instrumentator==7.1.0
+prometheus-client==0.24.0

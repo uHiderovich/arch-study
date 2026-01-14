@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException
 from app.services.notifications import notification_service
 from app.services.orders import orders_service
 from app.models import CreateOrderRequest
+from monitoring.counters import ORDERS_CREATED, ORDERS_FAILED
 
 
 router = APIRouter(prefix="/orders", tags=["orders"])
@@ -18,7 +19,10 @@ async def buy(request: CreateOrderRequest):
     )
 
     if order_res.status != "ok":
+        ORDERS_FAILED.inc()
         raise HTTPException(status_code=400, detail="Order creation failed")
+
+    ORDERS_CREATED.inc()
 
     try:
         notification_service.send_create_order_email(

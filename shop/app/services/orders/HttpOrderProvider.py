@@ -26,7 +26,7 @@ class HttpOrderProvider(OrderProvider):
         async with httpx.AsyncClient() as client:
             resp = await client.post(f"{self.url}/process/order", json={
                 "user_id": user_id,
-                "items": items,
+                "items": [item.model_dump() for item in items],
                 "price": price,
                 "address": address
             })
